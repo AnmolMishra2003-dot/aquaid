@@ -19,7 +19,7 @@ let lat = null;
 let lon = null;
 let stream = null;
 
-// ================= FILE SELECT =================
+// ================= FILE UPLOAD =================
 fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
     if (!file) return;
@@ -75,12 +75,10 @@ document.getElementById("get-location-btn").addEventListener("click", () => {
 cameraBtn.addEventListener("click", async () => {
     try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
-
         video.srcObject = stream;
         cameraContainer.classList.remove("hidden");
-
     } catch (err) {
-        alert("Camera access denied or not supported");
+        alert("Camera not supported or denied");
     }
 });
 
@@ -105,7 +103,7 @@ snapBtn.addEventListener("click", () => {
     });
 });
 
-closeCameraBtn.addEventListener("click", () => stopCamera());
+closeCameraBtn.addEventListener("click", stopCamera);
 
 function stopCamera() {
     if (stream) {
@@ -145,7 +143,7 @@ identifyBtn.addEventListener("click", async () => {
         const data = await res.json();
         showResults(data);
 
-    } catch (e) {
+    } catch (err) {
         alert("Server error");
     }
 
@@ -158,10 +156,17 @@ function showResults(data) {
 
     resultSection.classList.remove("hidden");
 
-    // Fish name
-    document.getElementById("result-species").innerText = data.species || "Unknown";
+    // ===== ONLY ONE PREDICTION =====
+    document.getElementById("result-species").innerText =
+        data.species || "Unknown";
 
-    // INFO TABLE
+    document.getElementById("conf-pct").innerText =
+        data.confidence ? data.confidence + "%" : "";
+
+    document.getElementById("conf-bar").style.width =
+        data.confidence ? data.confidence + "%" : "0%";
+
+    // ===== INFO TABLE =====
     const table = document.getElementById("info-table").querySelector("tbody");
     table.innerHTML = "";
 
@@ -173,6 +178,36 @@ function showResults(data) {
                     <td>${data.info[key]}</td>
                 </tr>
             `;
+        }
+    }
+
+    // ===== LOCATION =====
+    if (data.location) {
+        document.getElementById("place-display").innerText =
+            data.location.place || "Unknown";
+
+        document.getElementById("lat-display").innerText =
+            data.location.lat?.toFixed(4) || "-";
+
+        document.getElementById("lon-display").innerText =
+            data.location.lon?.toFixed(4) || "-";
+
+        document.getElementById("loc-details").classList.remove("hidden");
+    }
+
+    // ===== WEATHER (SAFE FIX) =====
+    const weather = data.weather || {};
+
+    const temp = weather.temperature;
+    const wind = weather.windspeed;
+
+    document.getElementById("weather-content").innerHTML = `
+        <p>🌡 Temperature: ${temp !== undefined ? temp + "°C" : "N/A"}</p>
+        <p>💨 Wind: ${wind !== undefined ? wind + " km/h" : "N/A"}</p>
+    `;
+
+    resultSection.scrollIntoView({ behavior: "smooth" });
+}
         }
     }
 
