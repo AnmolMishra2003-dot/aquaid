@@ -216,7 +216,7 @@ function showResults(data) {
 
     topDiv.innerHTML = `
         <p>${top.species} - ${top.confidence}%</p>
-    `;
+    `;}
 }
               
 
