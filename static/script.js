@@ -211,14 +211,14 @@ function showResults(data) {
     if (topDiv) {
         topDiv.innerHTML = "";
 
-        if (data.top_predictions) {
-            data.top_predictions.forEach(p => {
-                topDiv.innerHTML += `
-                    <p>${p.species} - ${p.confidence}%</p>
-                `;
-            });
-        }
-    }
+        if (data.top_predictions && data.top_predictions.length > 0) {
+    const top = data.top_predictions[0];
+
+    topDiv.innerHTML = `
+        <p>${top.species} - ${top.confidence}%</p>
+    `;
+}
+              
 
     resultSection.scrollIntoView({ behavior: "smooth" });
 }
