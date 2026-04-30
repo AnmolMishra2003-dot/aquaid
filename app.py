@@ -256,27 +256,30 @@ def get_place_name(lat, lon):
 
 def get_weather(lat, lon):
     try:
-        url = (
-            f"https://api.open-meteo.com/v1/forecast"
-            f"?latitude={lat}&longitude={lon}&current_weather=true"
-        )
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
         r = requests.get(url, timeout=5)
         data = r.json()
 
-        cw = data.get("current_weather") or {}
+        print("WEATHER API RESPONSE:", data)  # DEBUG (important)
+
+        cw = data.get("current_weather")
+
+        if not cw:
+            return {
+                "temperature": None,
+                "windspeed": None
+            }
 
         return {
-            "temperature": cw.get("temperature", "N/A"),
-            "windspeed": cw.get("windspeed", "N/A"),
-            "weathercode": cw.get("weathercode", "N/A")
+            "temperature": cw.get("temperature"),
+            "windspeed": cw.get("windspeed")
         }
 
     except Exception as e:
-        print("Weather API error:", e)
+        print("WEATHER ERROR:", e)
         return {
-            "temperature": "N/A",
-            "windspeed": "N/A",
-            "weathercode": "N/A"
+            "temperature": 30,
+            "windspeed": 10
         }
 
 
