@@ -135,7 +135,7 @@ identifyBtn.addEventListener("click", async () => {
     }
 
     try {
-        const res = await fetch("/predict", {
+        const res = await fetch("https://aquaid.onrender.com/predict", {
             method: "POST",
             body: formData
         });
@@ -195,53 +195,11 @@ function showResults(data) {
         document.getElementById("loc-details").classList.remove("hidden");
     }
 
-    // ===== WEATHER (SAFE FIX) =====
+    // ===== WEATHER =====
     const weather = data.weather || {};
 
-    const temp = weather.temperature;
-    const wind = weather.windspeed;
-
-    document.getElementById("weather-content").innerHTML = `
-        <p>🌡 Temperature: ${temp !== undefined ? temp + "°C" : "N/A"}</p>
-        <p>💨 Wind: ${wind !== undefined ? wind + " km/h" : "N/A"}</p>
-    `;
-
-    resultSection.scrollIntoView({ behavior: "smooth" });
-}
-        }
-    }
-
-    // TOP PREDICTIONS
-    const topDiv = document.getElementById("top-preds");
-    topDiv.innerHTML = "";
-
-    if (data.top_predictions) {
-        data.top_predictions.forEach(p => {
-            topDiv.innerHTML += `
-                <p>${p.species} - ${p.confidence}%</p>
-            `;
-        });
-    }
-
-    // ================= LOCATION =================
-    if (data.location) {
-        document.getElementById("place-display").innerText =
-            data.location.place || "Unknown";
-
-        document.getElementById("lat-display").innerText =
-            (data.location.lat ?? 0).toFixed(4);
-
-        document.getElementById("lon-display").innerText =
-            (data.location.lon ?? 0).toFixed(4);
-
-        document.getElementById("loc-details").classList.remove("hidden");
-    }
-
-    // ================= WEATHER (FIXED) =================
-    const weather = data.weather || {};
-
-    const temp = weather.temperature ?? 0;
-    const wind = weather.windspeed ?? 0;
+    const temp = weather.temperature ?? "N/A";
+    const wind = weather.windspeed ?? "N/A";
 
     document.getElementById("weather-content").innerHTML = `
         <p>🌡 Temperature: ${temp}°C</p>
