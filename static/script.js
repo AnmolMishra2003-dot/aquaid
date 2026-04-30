@@ -181,30 +181,44 @@ function showResults(data) {
         }
     }
 
-    // ===== LOCATION =====
+    // ===== LOCATION (FIXED SAFE) =====
     if (data.location) {
         document.getElementById("place-display").innerText =
             data.location.place || "Unknown";
 
         document.getElementById("lat-display").innerText =
-            data.location.lat?.toFixed(4) || "-";
+            data.location.lat ? data.location.lat.toFixed(4) : "-";
 
         document.getElementById("lon-display").innerText =
-            data.location.lon?.toFixed(4) || "-";
+            data.location.lon ? data.location.lon.toFixed(4) : "-";
 
         document.getElementById("loc-details").classList.remove("hidden");
     }
 
-    // ===== WEATHER =====
+    // ===== WEATHER (FIXED) =====
     const weather = data.weather || {};
 
-    const temp = weather.temperature ?? "N/A";
-    const wind = weather.windspeed ?? "N/A";
+    const temp = weather.temperature;
+    const wind = weather.windspeed;
 
     document.getElementById("weather-content").innerHTML = `
-        <p>🌡 Temperature: ${temp}°C</p>
-        <p>💨 Wind: ${wind} km/h</p>
+        <p>🌡 Temperature: ${temp !== null && temp !== undefined ? temp + "°C" : "N/A"}</p>
+        <p>💨 Wind: ${wind !== null && wind !== undefined ? wind + " km/h" : "N/A"}</p>
     `;
+
+    // ===== TOP PREDICTIONS FIX =====
+    const topDiv = document.getElementById("top-preds");
+    if (topDiv) {
+        topDiv.innerHTML = "";
+
+        if (data.top_predictions) {
+            data.top_predictions.forEach(p => {
+                topDiv.innerHTML += `
+                    <p>${p.species} - ${p.confidence}%</p>
+                `;
+            });
+        }
+    }
 
     resultSection.scrollIntoView({ behavior: "smooth" });
 }
